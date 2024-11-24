@@ -5,8 +5,8 @@
 	let { form }: { form: ActionData } = $props();
 </script>
 
-<h1>Login/Register</h1>
-<form method="post" action="?/login" use:enhance>
+<h1 class="p-4">Login/Register</h1>
+<form class="grid gap-4 p-4" method="post" action="?/login" use:enhance>
 	<label>
 		Username
 		<input name="username" />
@@ -15,7 +15,9 @@
 		Password
 		<input type="password" name="password" />
 	</label>
-	<button>Login</button>
-	<button formaction="?/register">Register</button>
+	<div>
+		<button class="mr-4">Login</button>
+		<button formaction="?/register">Register</button>
+	</div>
 </form>
 <p style="color: red">{form?.message ?? ''}</p>
