@@ -9,7 +9,7 @@
 	import Scoreboard from './scoreboard.svelte';
 	import { allParticipants, allResults, pouchDB } from './shared.svelte';
 
-	let loading = $derived(!allParticipants.filtered.length || !allResults.filtered.length);
+	let loading = $derived(!allParticipants.filtered || !allResults.filtered);
 
 	const addParticipants = async (event: SubmitEvent) => {
 		event.preventDefault();

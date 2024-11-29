@@ -109,7 +109,7 @@
 				/>
 				<span class="sr-only">Toggle theme</span>
 			</Button>
-			<form action="?/logout" method="post" use:enhance>
+			<form action="/app?/logout" method="post" use:enhance>
 				<Button>Sign out</Button>
 			</form>
 		</header>
