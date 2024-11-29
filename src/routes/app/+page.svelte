@@ -1,21 +1,60 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
-	import { Input } from '$lib/components/ui/input';
-	import type { ActionData, PageServerData } from './$types';
+	import { Textarea } from '$lib/components/ui/textarea';
+	import { nanoid } from 'nanoid';
+	import { Plus } from 'lucide-svelte';
+	import Participants from './participants.svelte';
+	import type { Participant } from '$lib/pouch-db/schema';
+	import Picker from './picker.svelte';
+	import Scoreboard from './scoreboard.svelte';
+	import { allParticipants, allResults, pouchDB } from './shared.svelte';
 
-	let { data, form }: { data: PageServerData; form: ActionData } = $props();
+	let loading = $derived(!allParticipants.filtered.length || !allResults.filtered.length);
+
+	const addParticipants = async (event: SubmitEvent) => {
+		event.preventDefault();
+		const form = event.target as HTMLFormElement;
+		const formData = new FormData(form);
+		const names = formData.get('names') as string;
+		const participants = names
+			.split('\n')
+			.flatMap((nameOrNames) => {
+				return nameOrNames.split(',').map((name) => name.trim());
+			})
+			.filter((name) => name.length > 0);
+		participants.forEach(async (name) => {
+			const id = nanoid();
+			const participant: Participant = {
+				_id: `participant|${id}|${Date.now()}`,
+				name,
+				created_at: Date.now()
+			};
+			await $pouchDB?.put(participant);
+		});
+		form.reset();
+	};
 </script>
 
-<div class="grid gap-3 p-10">
-	<h1>Hi, {data.user.username}!</h1>
-	<p>Your user ID is {data.user.id}</p>
-	<p>Your age is {data.user.age}</p>
-	<form action="?/setAge" method="post" use:enhance>
-		<Input required type="number" name="age" />
-		<Button>Set age</Button>
-		{#if form?.message}
-			<p>{form.message}</p>
-		{/if}
-	</form>
+<!-- Missing Things
+ Keyboard shortcuts
+ DEPLOY -->
+
+<div class="grid gap-3">
+	{#if loading}
+		<p>Loading...</p>
+	{:else}
+		<Picker />
+		<Scoreboard />
+		<Participants />
+		<form class="grid gap-2" onsubmit={addParticipants}>
+			<Textarea
+				class="resize-none"
+				placeholder="Add names on new lines or separated by commas"
+				required
+				name="names"
+				rows={6}
+			></Textarea>
+			<Button><Plus class="mr-2" />Add participants</Button>
+		</form>
+	{/if}
 </div>

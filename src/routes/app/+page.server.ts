@@ -1,9 +1,6 @@
 import * as auth from '$lib/server/auth';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { db } from '$lib/server/db';
-import { eq } from 'drizzle-orm';
-import { user } from '$lib/server/db/schema';
 
 export const ssr = false;
 
@@ -24,24 +21,5 @@ export const actions: Actions = {
 		auth.deleteSessionTokenCookie(event);
 
 		return redirect(302, '/login');
-	},
-	setAge: async (event) => {
-		if (!event.locals.user) {
-			return fail(401);
-		}
-		const data = await event.request.formData();
-		const age = data.get('age');
-		console.log('age:', Number(age));
-
-		if (!age) {
-			return fail(400, { message: 'age is required' });
-		}
-
-		await db
-			.update(user)
-			.set({ age: Number(age) })
-			.where(eq(user.id, event.locals.user.id));
-
-		return redirect(302, '/app');
 	}
 };
