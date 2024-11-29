@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestEvent } from './$types.js';
-import { COUCH_URL, COUCH_USER, COUCH_PW } from '$env/static/private';
+import { env } from '$env/dynamic/private';
+const { COUCH_URL, COUCH_USER, COUCH_PW } = env;
 
 export function fallback(event: RequestEvent) {
 	return forwardToCouch(event);
