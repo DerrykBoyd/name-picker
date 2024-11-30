@@ -8,8 +8,7 @@ COPY ./ .
 
 ENV PORT=5000
 ENV NODE_ENV=production
-RUN npm run build
 
-CMD ["node", "build"]
+CMD ["npm", "run", "serve"]
 
 EXPOSE 5000
