@@ -39,7 +39,7 @@
 	}
 </script>
 
-<div class="justify-items-center">
+<div class="grid justify-items-center">
 	<Button
 		disabled={isPicking}
 		onclick={pick}
