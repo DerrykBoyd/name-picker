@@ -3,6 +3,10 @@ import type { RequestEvent } from './$types.js';
 import { env } from '$env/dynamic/private';
 const { COUCH_URL, COUCH_USER, COUCH_PW } = env;
 
+export function GET(event: RequestEvent) {
+	return forwardToCouch(event);
+}
+
 export function fallback(event: RequestEvent) {
 	return forwardToCouch(event);
 }
@@ -25,10 +29,14 @@ async function forwardToCouch(event: RequestEvent) {
 		);
 
 		const response = await fetch(req);
-		response.headers.set('Access-Control-Allow-Origin', 'https://name-picker.fly.dev');
-		response.headers.set('Access-Control-Allow-Methods', '*');
 
-		return new Response(response.body, response);
+		return new Response(response.body, {
+			...response,
+			headers: {
+				...response.headers,
+				'Cache-Control': 'no-transform'
+			}
+		});
 	} catch (e) {
 		console.error('error forwarding req to couch', e);
 		return error(500, 'Internal Server Error');
