@@ -32,7 +32,7 @@ async function forwardToCouch(event: RequestEvent) {
 
 		const isSafari =
 			req.headers.get('User-Agent')?.includes('Safari/') &&
-			!req.headers.get('User-Agent')?.includes('Chrome/');
+			['Chrome/', 'Chromium/'].every((ua) => !req.headers.get('User-Agent')?.includes(ua));
 
 		if (isSafari)
 			return new Response(response.body, {
