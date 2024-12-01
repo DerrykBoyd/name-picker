@@ -30,13 +30,20 @@ async function forwardToCouch(event: RequestEvent) {
 
 		const response = await fetch(req);
 
-		return new Response(response.body, {
-			...response,
-			headers: {
-				...response.headers,
-				'Cache-Control': 'no-transform'
-			}
-		});
+		const isSafari =
+			req.headers.get('User-Agent')?.includes('Safari/') &&
+			!req.headers.get('User-Agent')?.includes('Chrome/');
+
+		if (isSafari)
+			return new Response(response.body, {
+				...response,
+				headers: {
+					...response.headers,
+					'Cache-Control': 'no-transform'
+				}
+			});
+
+		return new Response(response.body, response);
 	} catch (e) {
 		console.error('error forwarding req to couch', e);
 		return error(500, 'Internal Server Error');
