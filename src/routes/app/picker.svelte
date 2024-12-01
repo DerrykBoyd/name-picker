@@ -46,7 +46,7 @@
 		class="flex w-fit gap-3 bg-gradient-to-br from-purple-400 to-purple-700 px-10 py-6 text-lg hover:to-purple-900 active:to-purple-950"
 		><Shuffle />Pick Name</Button
 	>
-	<div class="flex gap-2 py-2">
+	<div class="flex items-center gap-2 py-2">
 		<span class="mr-4">Timing:</span>
 		<input
 			type="radio"

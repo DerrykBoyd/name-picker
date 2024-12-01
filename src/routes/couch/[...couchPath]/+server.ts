@@ -25,6 +25,8 @@ async function forwardToCouch(event: RequestEvent) {
 		);
 
 		const response = await fetch(req);
+		response.headers.set('Access-Control-Allow-Origin', 'https://name-picker.fly.dev');
+		response.headers.set('Access-Control-Allow-Methods', '*');
 
 		return new Response(response.body, response);
 	} catch (e) {
