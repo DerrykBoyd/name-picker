@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Clock, Trophy } from 'lucide-svelte';
 	import { allParticipants, allResults } from './shared.svelte';
+	import { formatDistanceToNow } from 'date-fns';
 
 	let scores = $derived.by(() => {
 		const scores = new Map<
@@ -36,7 +37,9 @@
 				<span class="ml-2 opacity-50">{score.total} win{score.total > 1 ? 's' : ''}</span>
 			</div>
 			<span class="flex items-center gap-1 text-sm opacity-50"
-				><Clock size={16} />{lastWin.toLocaleDateString()}</span
+				><Clock size={16} />{formatDistanceToNow(lastWin, {
+					addSuffix: true
+				})}</span
 			>
 		</li>
 	{/each}
