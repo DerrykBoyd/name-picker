@@ -18,41 +18,41 @@
 
 	let sync: PouchDB.Replication.Sync<{}>;
 
-	onMount(async () => {
+	function syncParticipants(db: PouchDB.Database<{}>) {
+		db.allDocs({
+			include_docs: true,
+			startkey: `participant|`,
+			endkey: `participant|\uffff`
+		}).then((result) => {
+			const all = result.rows.map((row: any) => row.doc as Participant);
+			setAllParticipants(getUniqueDocs(all));
+		});
+	}
+
+	function syncResults(db: PouchDB.Database<{}>) {
+		db.allDocs({
+			include_docs: true,
+			startkey: `result|`,
+			endkey: `result|\uffff`
+		}).then((result) => {
+			const all = result.rows.map((row: any) => row.doc as Result);
+			setAllResults(getUniqueDocs(all));
+		});
+	}
+
+	async function startSync() {
 		if (browser) {
 			const db = new PouchDB(`name-picker-${data.user.id}`);
 			const remoteDB = new PouchDB(new URL(`/couch/name-picker-${data.user.id}`, $page.url).href);
-
-			function syncParticipants() {
-				db.allDocs({
-					include_docs: true,
-					startkey: `participant|`,
-					endkey: `participant|\uffff`
-				}).then((result) => {
-					const all = result.rows.map((row: any) => row.doc as Participant);
-					setAllParticipants(getUniqueDocs(all));
-				});
-			}
-
-			function syncResults() {
-				db.allDocs({
-					include_docs: true,
-					startkey: `result|`,
-					endkey: `result|\uffff`
-				}).then((result) => {
-					const all = result.rows.map((row: any) => row.doc as Result);
-					setAllResults(getUniqueDocs(all));
-				});
-			}
-
+			if (sync) sync.cancel();
 			sync = db
 				.sync(remoteDB, {
 					live: true,
 					retry: true
 				})
 				.on('change', function (change) {
-					syncParticipants();
-					syncResults();
+					syncParticipants(db);
+					syncResults(db);
 				})
 				.on('paused', function (info) {
 					// replication was paused, usually because of a lost connection
@@ -65,11 +65,15 @@
 				});
 
 			// Load participants
-			syncParticipants();
-			syncResults();
+			syncParticipants(db);
+			syncResults(db);
 
 			pouchDB.set(db);
 		}
+	}
+
+	onMount(() => {
+		startSync();
 	});
 
 	import.meta.hot?.dispose(() => {
@@ -80,6 +84,8 @@
 		sync?.cancel();
 	});
 </script>
+
+<svelte:window onfocus={() => startSync()} />
 
 {#snippet navLink(pathname: string, text: string)}
 	<a
