@@ -6,16 +6,19 @@
 	import { Shuffle } from 'lucide-svelte';
 	import { nanoid } from 'nanoid';
 	import { allParticipants, pouchDB } from './shared.svelte';
+	import { Confetti } from 'svelte-confetti';
+	import { tick } from 'svelte';
 
 	let timing = $state<'instant' | 'suspense'>('instant');
 	let winner = $state<ParticipantType | null>(null);
 	let isPicking = $state(false);
+	let showConfetti = $state(false);
 
 	async function pick() {
+		isPicking = true;
 		if (timing === 'instant') {
 			winner = allParticipants.active[Math.floor(Math.random() * allParticipants.active.length)];
 		} else {
-			isPicking = true;
 			let interval = 250;
 
 			for (let i = 0; i < 10; i++) {
@@ -25,8 +28,11 @@
 			}
 
 			winner = allParticipants.active[Math.floor(Math.random() * allParticipants.active.length)];
-			isPicking = false;
 		}
+		isPicking = false;
+		showConfetti = false;
+		await tick();
+		showConfetti = true;
 
 		const id = nanoid();
 		const result: Result = {
@@ -72,15 +78,20 @@
 		{#each allParticipants.active as participant}
 			<span
 				class={cn(
-					'winner text-center text-lg font-semibold transition-opacity',
+					'winner origin-center text-center text-lg font-semibold transition-all duration-700',
 					winner?._id === participant._id ? 'opacity-50' : 'opacity-0',
-					winner?._id === participant._id && !isPicking && 'font-bold text-green-600 opacity-100'
+					winner?._id === participant._id &&
+						!isPicking &&
+						'scale-[4] font-bold text-green-600 opacity-100'
 				)}
 			>
 				{participant.name}
 			</span>
 		{/each}
 	</div>
+	{#if showConfetti}
+		<Confetti cone amount={200} x={[-1.5, 1.5]} />
+	{/if}
 </div>
 
 <style>
