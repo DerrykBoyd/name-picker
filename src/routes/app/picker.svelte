@@ -45,14 +45,14 @@
 	}
 </script>
 
-<div class="grid justify-items-center">
+<div class="my-2 grid justify-items-center">
 	<Button
 		disabled={isPicking}
 		onclick={pick}
 		class="flex w-fit gap-3 bg-gradient-to-br from-purple-400 to-purple-700 px-10 py-6 text-lg hover:to-purple-900 active:to-purple-950"
 		><Shuffle />Pick Name</Button
 	>
-	<div class="flex items-center gap-2 py-2">
+	<div class="mb-4 flex items-center gap-2 py-2">
 		<span class="mr-4">Timing:</span>
 		<input
 			type="radio"
@@ -74,7 +74,7 @@
 		/>
 		<label for="suspense">Suspense</label>
 	</div>
-	<div class="grid content-center p-6">
+	<div class="mb-2 grid content-center p-6">
 		{#each allParticipants.active as participant}
 			<span
 				class={cn(
@@ -82,7 +82,7 @@
 					winner?._id === participant._id ? 'opacity-50' : 'opacity-0',
 					winner?._id === participant._id &&
 						!isPicking &&
-						'scale-[4] font-bold text-green-600 opacity-100'
+						'scale-[3.5] font-bold text-green-600 opacity-100'
 				)}
 			>
 				{participant.name}
